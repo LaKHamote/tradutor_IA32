@@ -20,7 +20,11 @@ class Table {
         map<keyType, valueType>* getData() { return &data; };
 
         valueType* get(const keyType &key) {
-            return &(data[key]);
+            auto it = this->data.find(key);
+            if (it == this->data.end()) {
+                return nullptr;
+            }
+            return &(it->second);
         }
 
         void add(const keyType &key, valueType value) {
