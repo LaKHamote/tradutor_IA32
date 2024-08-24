@@ -36,8 +36,8 @@ Table<string, string> imaginary_instructions({
 });
 
 // A sample function to be used in the map
-void myFunction(string name ) {
-    cout << "Function " << name << "\n";
+void myFunction(string param ) {
+    cout << "Function " << param << "\n";
 }
 
 Table<string, function<void(string)>> ia32_instructions({
