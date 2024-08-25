@@ -118,7 +118,8 @@ int main() {
         mem_address++;
         }
         labels.show();
-        // cout<< "---------------" <<"\n";        
+        cout<< "---------------" <<"\n";       
+        init(); 
         file.close();
     }else {
         cerr << "Não foi possível abrir o arquivo." << "\n";
