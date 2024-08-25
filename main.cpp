@@ -41,20 +41,20 @@ void myFunction(string param ) {
 }
 
 Table<string, function<void(string)>> ia32_instructions({
-    {"ADD", myFunction},
-    {"SUB", myFunction},
-    {"MUL", myFunction},
-    {"DIV", myFunction},
-    {"JMP", myFunction},
-    {"JMPN", myFunction},
-    {"JMPP", myFunction},
-    {"JMPZ", myFunction},
-    {"COPY", myFunction},
-    {"LOAD", myFunction},
-    {"STORE", myFunction},
+    {"ADD", addFunction},
+    {"SUB", subFunction},
+    {"MUL", multFunction},
+    {"DIV", divFunction},
+    {"JMP", jumpFunction},
+    {"JMPN", jumpNegFunction},
+    {"JMPP", jumpPosFunction},
+    {"JMPZ", jumpZeroFunction},
+    {"COPY", copyFunction},
+    {"LOAD", loadFunction},
+    {"STORE", storeFunction},
     {"INPUT", myFunction},
     {"OUTPUT", myFunction},
-    {"STOP", myFunction}
+    {"STOP", stopFunction}
 });
 
 Table<string, string> labels;
@@ -62,7 +62,7 @@ Table<string, string> labels;
 int main() {
     function<void(string)> translate_IA32;
     int CURRENT_STATE = OPCODE_STATE; // começa procurando opcodes
-    ifstream file("../examples/ex1.asm"); // TODO: fazer IOStream
+    ifstream file("../examples/ex1.o"); // TODO: fazer IOStream
     string line;
     if (file.is_open()) {
         getline(file, line); // o codigo possui apenas uma linha com instrucoes
@@ -77,9 +77,12 @@ int main() {
         int label_counter=0;
 
         istringstream iss(line);                                                 // iss>>instr gets the next instr
+        //TODO:fazer section .data
+        init();
         while(iss>>instr){
             // cout << mem_address <<"\n";
             // cout << instr <<"\n";
+            
             if(CURRENT_STATE==OPCODE_STATE){
                 imaginary_instr = *imaginary_instructions.get(instr);
                 opcode=imaginary_instr;
@@ -105,7 +108,7 @@ int main() {
                     string* param0_ptr = labels.get(copy_param);
                     string* param1_ptr = labels.get(instr);
                     if(param0_ptr!=nullptr){//nesse caso precisamos passar o outro parametro do copy
-                        translate_IA32(*param0_ptr +" "+ *param1_ptr);
+                        translate_IA32(*param0_ptr +","+ *param1_ptr);
                     }else translate_IA32(*param1_ptr);
                     copy_param="";
                     CURRENT_STATE=OPCODE_STATE;
