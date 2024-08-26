@@ -16,6 +16,8 @@ using namespace std;
 
 #define OPCODE_STATE 0
 #define OPERAND_STATE 1
+#define DATA_STATE 2
+
 #define NOT !
 
 Table<string, string> imaginary_instructions({
@@ -36,11 +38,11 @@ Table<string, string> imaginary_instructions({
 });
 
 // A sample function to be used in the map
-void myFunction(string param ) {
+void myFunction(string param, ostream& output ) {
     cout << "Function " << param << "\n";
 }
 
-Table<string, function<void(string)>> ia32_instructions({
+Table<string, function<void(string, ostream&)>> ia32_instructions({
     {"ADD", addFunction},
     {"SUB", subFunction},
     {"MUL", multFunction},
@@ -57,28 +59,33 @@ Table<string, function<void(string)>> ia32_instructions({
     {"STOP", stopFunction}
 });
 
-Table<string, string> labels;
+Table<int, string> labels;
 
 int main() {
-    function<void(string)> translate_IA32;
+    function<void(string, ostream&)> translate_IA32;
     int CURRENT_STATE = OPCODE_STATE; // começa procurando opcodes
-    ifstream file("../examples/ex1.o"); // TODO: fazer IOStream
+    ifstream inputFile("../examples/ex1.o");
+    ofstream outputFile("../examples/saida1.asm");
+    if (!outputFile.is_open()) {
+        cerr << "Erro ao abrir o arquivo de saída" << endl;
+    }
     string line;
-    if (file.is_open()) {
-        getline(file, line); // o codigo possui apenas uma linha com instrucoes
+    if (inputFile.is_open()) {
+        getline(inputFile, line); // o codigo possui apenas uma linha com instrucoes
         // cout << line << "\n";
         string instr;
         string opcode;
         string imaginary_instr;
         bool copy_inst;
-        string copy_param;
+        string copy_param="-1";
         string* label_ptr;
         int mem_address = 0;
         int label_counter=0;
-
-        istringstream iss(line);                                                 // iss>>instr gets the next instr
-        //TODO:fazer section .data
-        init();
+        int data;
+        istringstream iss(line);// iss>>instr gets the next instr
+        Table<int, int> consts;
+        Table<int, int> spaces;
+        init(outputFile);
         while(iss>>instr){
             // cout << mem_address <<"\n";
             // cout << instr <<"\n";
@@ -91,39 +98,60 @@ int main() {
 
                 if(imaginary_instr=="COPY")  copy_inst=true; // copy tem dois operands
 
-                if(imaginary_instr=="STOP") break; // resolver macros
+                if(imaginary_instr=="STOP"){
+                    stopFunction("",outputFile);
+                    CURRENT_STATE=DATA_STATE;
 
-
-                CURRENT_STATE=OPERAND_STATE;
-
+                }else{
+                    CURRENT_STATE=OPERAND_STATE;
+                }
             }else if(CURRENT_STATE==OPERAND_STATE){
-                if(NOT copy_inst){
-
-                    label_ptr = labels.get(instr);
+                if(NOT copy_inst){                    
+                    label_ptr = labels.get(stoi(instr));
                     if(label_ptr==nullptr){
-                        labels.add(instr, "label"+to_string(label_counter));
+                        labels.add(stoi(instr), "LABEL"+to_string(label_counter));
                         label_counter++;
                     }
-                    //TODO: escrever linha
-                    string* param0_ptr = labels.get(copy_param);
-                    string* param1_ptr = labels.get(instr);
+                    string* param0_ptr = labels.get(stoi(copy_param));
+                    string* param1_ptr = labels.get(stoi(instr));
                     if(param0_ptr!=nullptr){//nesse caso precisamos passar o outro parametro do copy
-                        translate_IA32(*param0_ptr +","+ *param1_ptr);
-                    }else translate_IA32(*param1_ptr);
-                    copy_param="";
+                        translate_IA32(*param0_ptr +","+ *param1_ptr, outputFile);
+                    }else translate_IA32(*param1_ptr, outputFile);
+                    copy_param="-1";
                     CURRENT_STATE=OPCODE_STATE;
                 }else{
                     copy_param=instr;
                     copy_inst=false;
                 }
+            }else if(CURRENT_STATE==DATA_STATE){
+                data = stoi(instr);
+                if(data!=0){//data initialized
+                    consts.add(mem_address, data);
+                    // cout << "\t" <<*labels.get(mem_address) << " dd "<< data << "\n";
+                }else{//data not initialized
+                    spaces.add(mem_address, data);
+                    // cout<<"section .bss\n";
+                    // cout << "\t" << *labels.get(mem_address++) <<" resd " << "1\n";
+                }
             }
         // cout<<"-----------"<<"\n";
         mem_address++;
         }
-        labels.show();
+        //TODO: concertar labels de jmps
+        
+        outputFile<<"section .data\n";
+        for (const auto &elem : *consts.getData()) {
+            outputFile << "\t" <<*labels.get(elem.first) << " dd "<< elem.second << "\n";
+        }
+        outputFile<<"section .bss\n";
+        for (const auto &elem : *spaces.getData()) {
+            outputFile << "\t" << *labels.get(elem.first) <<" resd " << "1\n";
+        }
+        // labels.show();
         cout<< "---------------" <<"\n";       
-        init(); 
-        file.close();
+        inputFile.close();
+        outputFile.close();
+
     }else {
         cerr << "Não foi possível abrir o arquivo." << "\n";
     }

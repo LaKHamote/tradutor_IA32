@@ -7,30 +7,30 @@
 
 using namespace std;
 
-void init();
+void init(ostream&);
 
-void loadFunction(string param);
+void loadFunction(string , ostream&);
 
-void storeFunction(string param);
+void storeFunction(string , ostream&);
 
-void subFunction(string param);
+void subFunction(string , ostream&);
 
-void addFunction(string param);
+void addFunction(string , ostream&);
 
-void copyFunction(string param);
+void copyFunction(string , ostream&);
 
-void jumpPosFunction(string param);
+void jumpPosFunction(string , ostream&);
 
-void jumpNegFunction(string param);
+void jumpNegFunction(string , ostream&);
 
-void jumpZeroFunction(string param);
+void jumpZeroFunction(string , ostream&);
 
-void jumpFunction(string param);
+void jumpFunction(string , ostream&);
 
-void divFunction(string param);
+void divFunction(string , ostream&);
 
-void multFunction(string param);
+void multFunction(string , ostream&);
 
-void stopFunction(string param);
+void stopFunction(string , ostream&);
 
 #endif 
