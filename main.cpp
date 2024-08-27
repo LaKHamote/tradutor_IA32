@@ -20,30 +20,21 @@ using namespace std;
 
 #define NOT !
 
-Table<string, string> imaginary_instructions({
-    {"1", "ADD"},
-    {"2", "SUB"},
-    {"3", "MUL"},
-    {"4", "DIV"},
-    {"5", "JMP"},
-    {"6", "JMPN"},
-    {"7", "JMPP"},
-    {"8", "JMPZ"},
-    {"9", "COPY"},
-    {"01", "ADD"},
-    {"02", "SUB"},
-    {"03", "MUL"},
-    {"04", "DIV"},
-    {"05", "JMP"},
-    {"06", "JMPN"},
-    {"07", "JMPP"},
-    {"08", "JMPZ"},
-    {"09", "COPY"},
-    {"10", "LOAD"},
-    {"11", "STORE"},
-    {"12", "INPUT"},
-    {"13", "OUTPUT"},
-    {"14", "STOP"}
+Table<int, string> imaginary_instructions({
+    {1, "ADD"},
+    {2, "SUB"},
+    {3, "MUL"},
+    {4, "DIV"},
+    {5, "JMP"},
+    {6, "JMPN"},
+    {7, "JMPP"},
+    {8, "JMPZ"},
+    {9, "COPY"},
+    {10, "LOAD"},
+    {11, "STORE"},
+    {12, "INPUT"},
+    {13, "OUTPUT"},
+    {14, "STOP"}
 });
 
 // A sample function to be used in the map
@@ -103,8 +94,9 @@ int main(int argc, char* argv[]) {
             // cout << mem_address <<"\n";
             // cout << instr <<"\n";
             
+            
             if(CURRENT_STATE==OPCODE_STATE){
-                imaginary_instr = *imaginary_instructions.get(instr);
+                imaginary_instr = *imaginary_instructions.get(stoi(instr));
                 opcode=imaginary_instr;
                 // cout << opcode <<"\n";
                 translate_IA32 = *ia32_instructions.get(imaginary_instr);
