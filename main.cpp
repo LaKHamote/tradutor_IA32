@@ -30,6 +30,15 @@ Table<string, string> imaginary_instructions({
     {"7", "JMPP"},
     {"8", "JMPZ"},
     {"9", "COPY"},
+    {"01", "ADD"},
+    {"02", "SUB"},
+    {"03", "MUL"},
+    {"04", "DIV"},
+    {"05", "JMP"},
+    {"06", "JMPN"},
+    {"07", "JMPP"},
+    {"08", "JMPZ"},
+    {"09", "COPY"},
     {"10", "LOAD"},
     {"11", "STORE"},
     {"12", "INPUT"},
@@ -54,8 +63,8 @@ Table<string, function<void(string, ostream&)>> ia32_instructions({
     {"COPY", copyFunction},
     {"LOAD", loadFunction},
     {"STORE", storeFunction},
-    {"INPUT", myFunction},
-    {"OUTPUT", myFunction},
+    {"INPUT", inputFunction},
+    {"OUTPUT", outputFunction},
     {"STOP", stopFunction}
 });
 
@@ -65,10 +74,10 @@ Table<string, int> used_labels;
 int main() {
     function<void(string, ostream&)> translate_IA32;
     int CURRENT_STATE = OPCODE_STATE; // começa procurando opcodes
-    ifstream inputFile("../examples/ex1.o");
-    ofstream outputFileTemp("../examples/saida1.tmp");
-    ifstream inputFileTemp("../examples/saida1.tmp");
-    ofstream outputFile("../examples/saida1.asm");
+    ifstream inputFile("../examples/ex2.obj");
+    ofstream outputFileTemp("../examples/saida2.tmp");
+    ifstream inputFileTemp("../examples/saida2.tmp");
+    ofstream outputFile("../examples/saida2.s");
     if (!outputFileTemp.is_open()) {
         cerr << "Erro ao criar o arquivo temporario" << endl;
     }
@@ -87,7 +96,6 @@ int main() {
         istringstream iss(line);// iss>>instr gets the next instr
         Table<int, int> consts;
         Table<int, int> spaces;
-        init(outputFileTemp);
         while(iss>>instr){
             // cout << mem_address <<"\n";
             // cout << instr <<"\n";
@@ -154,7 +162,7 @@ int main() {
 
         outputFileTemp.close();
         if (inputFileTemp.is_open()) {
-            outputFile<<"\n";
+            init(outputFile);
             while(getline(inputFileTemp, line)){
                 if( (line.back()!=':') ||
                     (used_labels.get(line)!=nullptr)
@@ -167,9 +175,9 @@ int main() {
         }else cerr << "Erro ao abrir o arquivo de saída" << endl;
 
         
-        labels.show();
+        // labels.show();
         cout<< "---------------" <<"\n";
-        used_labels.show();
+        // used_labels.show();
         inputFileTemp.close();
         inputFile.close();
         outputFile.close();

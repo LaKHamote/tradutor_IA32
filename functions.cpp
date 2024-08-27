@@ -3,7 +3,7 @@
 
 
 void init(ostream& output){
-    output << "section .text \n\t\tglobal _start \n_start:\n";
+    output << "\nsection .text \n\t\tglobal _start \n_start:\n";
 }
 
 void loadFunction(string param, ostream& output){
@@ -61,11 +61,28 @@ void divFunction(string param, ostream& output){
 //TODO:verificar overflow
 void multFunction(string param, ostream& output){
     output << "\t\tmov EBX, ["<<param<<"]\n";
-    output << "\t\timull EBX\n";
+    output << "\t\timul EBX\n";
 }
 
 void stopFunction(string param, ostream& output){
     output << "\t\tmov EAX, 1\n";
     output << "\t\tmov EBX, 0\n";
+    output << "\t\tint 80h\n";
+}
+
+void inputFunction(string param, ostream& output){
+    //TODO:transformar int pra string
+    output << "\t\tmov EAX, 3\n";
+    output << "\t\tmov EBX, 0\n";
+    output << "\t\tmov ECX, "<< param<<"\n";
+    output << "\t\tmov EDX, 16\n"; //printo 4bytes só
+    output << "\t\tint 80h\n";
+}
+
+void outputFunction(string param, ostream& output){
+    output << "\t\tmov EAX, 4\n";
+    output << "\t\tmov EBX, 1\n";
+    output << "\t\tmov ECX, "<< param<<"\n";
+    output << "\t\tmov EDX, 4\n"; //printo 4bytes só
     output << "\t\tint 80h\n";
 }

@@ -1,31 +1,36 @@
+section .bss
+		LABEL8 resd 1
+		LABEL1 resd 1
+
 section .data
-Snippet db 'KANGAROO',0dH,0aH
+		LABEL4 dd 1
 
-section .text
-global _start
-
+section .text 
+		global _start 
 _start:
-    mov eax,4
-    mov ebx,1
-    mov ecx,Snippet
-    mov edx,10
-    int 80h
-
-    mov ebx,Snippet
-    mov eax,8
-
-DoMore:
-    add byte [ebx],32
-    inc ebx
-    dec eax
-    jnz DoMore
-
-    mov eax,4
-    mov ebx,1
-    mov ecx,Snippet
-    mov edx,10
-    int 80h
-
-    mov eax,1
-    mov ebx,0
-    int 80h
+		mov EAX, 3
+		mov EBX, 0
+		mov ECX, LABEL1
+		mov EDX, 4
+		int 80h
+		mov EAX, [LABEL1]
+LABEL3:
+		mov EBX,[LABEL4]
+		sub EAX, EBX
+		cmp EAX, 0
+		je LABEL6
+		mov [LABEL8], EAX
+		mov EBX, [LABEL1]
+		imul EBX
+		mov [LABEL1], EAX
+		mov EAX, [LABEL8]
+		jmp LABEL3
+LABEL6:
+		mov EAX, 4
+		mov EBX, 1
+		mov ECX, LABEL1
+		mov EDX, 4
+		int 80h
+		mov EAX, 1
+		mov EBX, 0
+		int 80h
