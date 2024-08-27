@@ -13,4 +13,4 @@ OBS: Caso não consiga compilar, existem executáveis disponíveis na pasta exec
 ### Sobre I/O
 O local o tradutor (seu/caminho/...../tradutor/bin) vai ser onde o out vai sair.
 exemplo:
-- .\tradutor.exe ../out/prog5.obj ../out/prog6.obj ---> gera -----> ../out/prog6.e
+- .\tradutor.exe ../out/prog5.obj ../out/prog6.obj ---> gera -----> ../out/prog6.s

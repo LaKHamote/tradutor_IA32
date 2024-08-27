@@ -121,9 +121,10 @@ int main(int argc, char* argv[]) {
                     CURRENT_STATE=OPERAND_STATE;
                 }
             }else if(CURRENT_STATE==OPERAND_STATE){
+                if (labels.get(stoi(instr))==nullptr) labels.add(stoi(instr), "LABEL"+to_string(label_counter++));
+                if (used_labels.get(*labels.get(stoi(instr))+":")==nullptr) used_labels.add(*labels.get(stoi(instr))+":", stoi(instr));
+                
                 if(NOT copy_inst){                    
-                    if (labels.get(stoi(instr))==nullptr) labels.add(stoi(instr), "LABEL"+to_string(label_counter++));
-                    if (used_labels.get(*labels.get(stoi(instr))+":")==nullptr) used_labels.add(*labels.get(stoi(instr))+":", stoi(instr));
                     string* param0_ptr = labels.get(stoi(copy_param));
                     string* param1_ptr = labels.get(stoi(instr));
                     if(param0_ptr!=nullptr){//nesse caso precisamos passar o outro parametro do copy

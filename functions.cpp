@@ -28,8 +28,8 @@ void copyFunction(string param, ostream& output){
     size_t c_index = param.find(',');
     string p1 = param.substr(0, c_index);
     string p2 = param.substr(c_index + 1);
-    output << "\t\tmov ECX, ["<<p2<<"]\n";
-    output << "\t\tmov ["<<p1<<"], ECX\n";
+    output << "\t\tmov ECX, ["<<p1<<"]\n";
+    output << "\t\tmov ["<<p2<<"], ECX\n";
 }
 
 void jumpPosFunction(string param, ostream& output){
@@ -82,6 +82,8 @@ void inputFunction(string param, ostream& output){
 }
 
 void outputFunction(string param, ostream& output){
+    output << "\t\tadd DWORD ["<<param<<"], 30h\n"; //caso queria int pra string
+
     output << "\t\tmov EAX, 4\n";
     output << "\t\tmov EBX, 1\n";
     output << "\t\tmov ECX, "<< param<<"\n";

@@ -18,7 +18,9 @@ ia_32:
 	ld -m elf_i386 -o .$(path:.s=.exe) .$(path:.s=.o)
 	rm -f ../$(path:.s=.o)
 	rm -f ../$(path:.s=.tmp)
+	@echo "--------Running .exe file...--------"
 	../$(path:.s=.exe)
+	@echo "\n--------.exe file has finished executing.--------"
 	rm -f ../$(path:.s=.exe)
 
 run:
