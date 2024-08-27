@@ -33,8 +33,8 @@ void multFunction(string , ostream&);
 
 void stopFunction(string , ostream&);
 
-void inputFunction(string param, ostream& output);
+void inputFunction(string , ostream&);
 
-void outputFunction(string param, ostream& output);
+void outputFunction(string , ostream&);
 
 #endif 

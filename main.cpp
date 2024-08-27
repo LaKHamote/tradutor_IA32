@@ -71,13 +71,16 @@ Table<string, function<void(string, ostream&)>> ia32_instructions({
 Table<int, string> labels;
 Table<string, int> used_labels;
 
-int main() {
+int main(int argc, char* argv[]) {
     function<void(string, ostream&)> translate_IA32;
     int CURRENT_STATE = OPCODE_STATE; // começa procurando opcodes
-    ifstream inputFile("../examples/ex2.obj");
-    ofstream outputFileTemp("../examples/saida2.tmp");
-    ifstream inputFileTemp("../examples/saida2.tmp");
-    ofstream outputFile("../examples/saida2.s");
+
+    ifstream inputFile(argv[1]);
+    string inputFilePath = argv[1];
+    string pathToFile = inputFilePath.substr(0, inputFilePath.length() - 3); // retirar obj
+    ofstream outputFileTemp(pathToFile+"tmp");
+    ifstream inputFileTemp(pathToFile+"tmp");
+    ofstream outputFile(pathToFile+"s");
     if (!outputFileTemp.is_open()) {
         cerr << "Erro ao criar o arquivo temporario" << endl;
     }
@@ -176,7 +179,7 @@ int main() {
 
         
         // labels.show();
-        cout<< "---------------" <<"\n";
+        // cout<< "---------------" <<"\n";
         // used_labels.show();
         inputFileTemp.close();
         inputFile.close();

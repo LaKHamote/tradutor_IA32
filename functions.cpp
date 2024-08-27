@@ -75,8 +75,10 @@ void inputFunction(string param, ostream& output){
     output << "\t\tmov EAX, 3\n";
     output << "\t\tmov EBX, 0\n";
     output << "\t\tmov ECX, "<< param<<"\n";
-    output << "\t\tmov EDX, 16\n"; //printo 4bytes só
+    output << "\t\tmov EDX, 1\n"; // um unico digito de int
     output << "\t\tint 80h\n";
+    //subtrair 30h pra pegar um unico digito de int
+    output << "\t\tsub DWORD ["<<param<<"], 30h\n";
 }
 
 void outputFunction(string param, ostream& output){
