@@ -60,14 +60,17 @@ Table<string, function<void(string, ostream&)>> ia32_instructions({
 });
 
 Table<int, string> labels;
+Table<string, int> used_labels;
 
 int main() {
     function<void(string, ostream&)> translate_IA32;
     int CURRENT_STATE = OPCODE_STATE; // começa procurando opcodes
     ifstream inputFile("../examples/ex1.o");
+    ofstream outputFileTemp("../examples/saida1.tmp");
+    ifstream inputFileTemp("../examples/saida1.tmp");
     ofstream outputFile("../examples/saida1.asm");
-    if (!outputFile.is_open()) {
-        cerr << "Erro ao abrir o arquivo de saída" << endl;
+    if (!outputFileTemp.is_open()) {
+        cerr << "Erro ao criar o arquivo temporario" << endl;
     }
     string line;
     if (inputFile.is_open()) {
@@ -78,14 +81,13 @@ int main() {
         string imaginary_instr;
         bool copy_inst;
         string copy_param="-1";
-        string* label_ptr;
         int mem_address = 0;
         int label_counter=0;
         int data;
         istringstream iss(line);// iss>>instr gets the next instr
         Table<int, int> consts;
         Table<int, int> spaces;
-        init(outputFile);
+        init(outputFileTemp);
         while(iss>>instr){
             // cout << mem_address <<"\n";
             // cout << instr <<"\n";
@@ -95,11 +97,13 @@ int main() {
                 opcode=imaginary_instr;
                 // cout << opcode <<"\n";
                 translate_IA32 = *ia32_instructions.get(imaginary_instr);
+                labels.add(mem_address, "LABEL"+to_string(label_counter++));
+                outputFileTemp << *labels.get(mem_address) << ":\n";
 
                 if(imaginary_instr=="COPY")  copy_inst=true; // copy tem dois operands
 
                 if(imaginary_instr=="STOP"){
-                    stopFunction("",outputFile);
+                    stopFunction("",outputFileTemp);
                     CURRENT_STATE=DATA_STATE;
 
                 }else{
@@ -107,16 +111,13 @@ int main() {
                 }
             }else if(CURRENT_STATE==OPERAND_STATE){
                 if(NOT copy_inst){                    
-                    label_ptr = labels.get(stoi(instr));
-                    if(label_ptr==nullptr){
-                        labels.add(stoi(instr), "LABEL"+to_string(label_counter));
-                        label_counter++;
-                    }
+                    if (labels.get(stoi(instr))==nullptr) labels.add(stoi(instr), "LABEL"+to_string(label_counter++));
+                    if (used_labels.get(*labels.get(stoi(instr))+":")==nullptr) used_labels.add(*labels.get(stoi(instr))+":", stoi(instr));
                     string* param0_ptr = labels.get(stoi(copy_param));
                     string* param1_ptr = labels.get(stoi(instr));
                     if(param0_ptr!=nullptr){//nesse caso precisamos passar o outro parametro do copy
-                        translate_IA32(*param0_ptr +","+ *param1_ptr, outputFile);
-                    }else translate_IA32(*param1_ptr, outputFile);
+                        translate_IA32(*param0_ptr +","+ *param1_ptr, outputFileTemp);
+                    }else translate_IA32(*param1_ptr, outputFileTemp);
                     copy_param="-1";
                     CURRENT_STATE=OPCODE_STATE;
                 }else{
@@ -137,18 +138,39 @@ int main() {
         // cout<<"-----------"<<"\n";
         mem_address++;
         }
-        //TODO: concertar labels de jmps
-        
-        outputFile<<"section .data\n";
-        for (const auto &elem : *consts.getData()) {
-            outputFile << "\t" <<*labels.get(elem.first) << " dd "<< elem.second << "\n";
+
+        if (!outputFile.is_open()) {
+            cerr << "Erro ao criar o arquivo temporario" << endl;
         }
+
         outputFile<<"section .bss\n";
         for (const auto &elem : *spaces.getData()) {
-            outputFile << "\t" << *labels.get(elem.first) <<" resd " << "1\n";
+            outputFile << "\t\t" << *labels.get(elem.first) <<" resd " << "1\n";
         }
-        // labels.show();
-        cout<< "---------------" <<"\n";       
+        outputFile<<"\nsection .data\n";
+        for (const auto &elem : *consts.getData()) {
+            outputFile << "\t\t" <<*labels.get(elem.first) << " dd "<< elem.second << "\n";
+        }
+
+        outputFileTemp.close();
+        if (inputFileTemp.is_open()) {
+            outputFile<<"\n";
+            while(getline(inputFileTemp, line)){
+                if( (line.back()!=':') ||
+                    (used_labels.get(line)!=nullptr)
+                ){
+                    outputFile<<line<<endl;
+                }
+
+            }
+        
+        }else cerr << "Erro ao abrir o arquivo de saída" << endl;
+
+        
+        labels.show();
+        cout<< "---------------" <<"\n";
+        used_labels.show();
+        inputFileTemp.close();
         inputFile.close();
         outputFile.close();
 
