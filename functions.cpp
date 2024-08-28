@@ -1,5 +1,9 @@
 #include "functions.hpp"
-
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <unistd.h>   // para mkstemp
+#include <cstdio>     // para remove
 
 
 void init(ostream& output){
@@ -70,15 +74,24 @@ void stopFunction(string param, ostream& output){
     output << "\t\tint 80h\n";
 }
 
-void inputFunction(string param, ostream& output){
-    //TODO:transformar int pra string
-    output << "\t\tmov EAX, 3\n";
-    output << "\t\tmov EBX, 0\n";
-    output << "\t\tmov ECX, "<< param<<"\n";
-    output << "\t\tmov EDX, 1\n"; // um unico digito de int
-    output << "\t\tint 80h\n";
-    //subtrair 30h pra pegar um unico digito de int
-    output << "\t\tsub DWORD ["<<param<<"], 30h\n";
+extern "C" int input_function(int fd, const char* str, int length);
+void inputFunction(string message, ostream& output) {
+    // Create a temporary C-style file
+    char filename[] = "tempfileXXXXXX"; // mkstemp will replace XXXXXX with unique characters
+    int fd = mkstemp(filename);
+    cout << filename << endl;
+    // Call the assembly function with the file descriptor
+    input_function(fd, message.c_str(), message.length());
+    //close(fd); isso da seg fault, vai saber la pq
+
+    ifstream tempFile(filename);
+    output << tempFile.rdbuf();
+
+    // Fechar o arquivo e remover o arquivo temporário
+    tempFile.close();
+    remove(filename);
+    return;
+    
 }
 
 void outputFunction(string param, ostream& output){

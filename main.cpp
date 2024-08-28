@@ -83,6 +83,7 @@ int main(int argc, char* argv[]) {
         string opcode;
         string imaginary_instr;
         bool copy_inst;
+        bool input_inst=0;
         string copy_param="-1";
         int mem_address = 0;
         int label_counter=0;
@@ -102,6 +103,8 @@ int main(int argc, char* argv[]) {
                 translate_IA32 = *ia32_instructions.get(imaginary_instr);
                 labels.add(mem_address, "LABEL"+to_string(label_counter++));
                 outputFileTemp << *labels.get(mem_address) << ":\n";
+
+                if(imaginary_instr=="INPUT")  input_inst=true; // copy tem dois operands
 
                 if(imaginary_instr=="COPY")  copy_inst=true; // copy tem dois operands
 
@@ -148,10 +151,13 @@ int main(int argc, char* argv[]) {
         }
 
         outputFile<<"section .bss\n";
+        if (input_inst) outputFile<<"\t\tnum resd 1 ; Variável para armazenar o char lido\n";
+
         for (const auto &elem : *spaces.getData()) {
             outputFile << "\t\t" << *labels.get(elem.first) <<" resd " << "1\n";
         }
         outputFile<<"\nsection .data\n";
+        if (input_inst) outputFile<<"\t\tbuffer db 11 ; Buffer para armazenar o numero de entrada (máx 10 caracteres + 1 para o null terminator)\n";
         for (const auto &elem : *consts.getData()) {
             outputFile << "\t\t" <<*labels.get(elem.first) << " dd "<< elem.second << "\n";
         }
