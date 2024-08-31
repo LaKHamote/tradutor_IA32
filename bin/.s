@@ -1,89 +1,10 @@
 section .bss
-		LABEL1 resd 1
-		LABEL3 resd 1
-		LABEL7 resd 1
 
 section .data
-		str_lido db "Bytes lidos: ", 0x0A 
-		len_lido equ $-str_lido 
-		str_escrito db "Bytes escritos: ", 0X0A 
-		len_escrito equ $-str_escrito 
-		LABEL5 dd 1
 
 section .text 
 		global _start 
 _start:
-		call input_function ; Input será carregado em EDX, numero de bytes lidos em EBX e EAX
-		mov [LABEL1], EDX
-		push EBX ; joga valor atual de EBX na stack
-		push ECX ; joga valor atual de ECX na stack
-		push EDX ; joga valor atual de EDX na stack
-		push EAX ; joga valor atual de EAX na stack
-		mov eax, 4
-		mov ebx, 1
-		mov ecx, str_lido
-		mov edx, len_lido
-		int 0x80
-		pop EAX ; volta valor antigo de EAX
-		pop EDX ; volta valor antigo de EDX
-		pop ECX ; volta valor antigo de ECX
-		pop EBX ; volta valor antigo de EBX
-		call output_function ; Mostra bytes lidos no console
-		call input_function ; Input será carregado em EDX, numero de bytes lidos em EBX e EAX
-		mov [LABEL3], EDX
-		push EBX ; joga valor atual de EBX na stack
-		push ECX ; joga valor atual de ECX na stack
-		push EDX ; joga valor atual de EDX na stack
-		push EAX ; joga valor atual de EAX na stack
-		mov eax, 4
-		mov ebx, 1
-		mov ecx, str_lido
-		mov edx, len_lido
-		int 0x80
-		pop EAX ; volta valor antigo de EAX
-		pop EDX ; volta valor antigo de EDX
-		pop ECX ; volta valor antigo de ECX
-		pop EBX ; volta valor antigo de EBX
-		call output_function ; Mostra bytes lidos no console
-		mov EAX, [LABEL5]
-		mov [LABEL7], EAX
-		mov EAX, [LABEL3]
-LABEL9:
-		cmp EAX, 0
-		je LABEL10
-		mov EAX, [LABEL7]
-		mov EBX, [LABEL1]
-		imul EBX
-		mov [LABEL7], EAX
-		mov EAX, [LABEL3]
-		mov EBX,[LABEL5]
-		sub EAX, EBX
-		mov [LABEL3], EAX
-		jmp LABEL9
-LABEL10:
-		push EBX ; joga valor atual de EBX na stack
-		push EAX ; joga valor atual de EAX na stack
-		mov EBX, [LABEL7]
-		call output_function ; Mostra label que foi colocado em EBX
-		push EBX ; joga valor atual de EBX na stack
-		push ECX ; joga valor atual de ECX na stack
-		push EDX ; joga valor atual de EDX na stack
-		push EAX ; joga valor atual de EAX na stack
-		mov eax, 4
-		mov ebx, 1
-		mov ecx, str_escrito
-		mov edx, len_escrito
-		int 0x80
-		pop EAX ; volta valor antigo de EAX
-		pop EDX ; volta valor antigo de EDX
-		pop ECX ; volta valor antigo de ECX
-		pop EBX ; volta valor antigo de EBX
-		call output_function ; Mostra bytes escritos em EAX
-		pop EAX ; volta valor antigo de EAX
-		pop EBX ; volta valor antigo de EBX
-		mov EAX, 1
-		mov EBX, 0
-		int 80h
 input_function:
     xor ebx, ebx       ; ebx conta quantos bytes foram lidos, começa em zero
     xor edx, edx       ; edx será o acumulador para o número final, começa em zero
@@ -172,10 +93,6 @@ convert_loop:
     cmp eax, 0            ; Compara o quociente (EAX) com 0
     jne convert_loop      ; Se o quociente não for 0, continua o loop para processar o próximo dígito
 
-    mov ebx, ecx          ; Guarda em ebx os bytes escritos
-
-    add ebx, 1            ; Guarda em ebx os bytes escritos
-
 imprime_pilha:
     cmp ecx, 0            ; Compara o contador de dígitos (ECX) com 0
     je end                ; Se ECX for 0 (não há mais dígitos para imprimir), salta para o rótulo end
@@ -208,5 +125,4 @@ end:
     mov eax, 0x0A        ; Carrega o valor do caractere de nova linha (Line Feed) em EAX
     call escreve_char    ; Chama a função escreve_char para imprimir a nova linha
     pop eax              ; Preserva o valor de bytes escritos em eax
-    mov eax,ebx          ; Guarda os bytes escritos + endline 
     ret                  ; Retorna da função output_function
