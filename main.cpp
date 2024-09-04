@@ -68,73 +68,78 @@ int main(int argc, char* argv[]) {
 
     ifstream inputFile(argv[1]);
     string inputFilePath = argv[1];
+    if (!inputFile.is_open()) {
+        throw invalid_argument("\n\n\tArquivo nao encontrado\n");
+    }
     string pathToFile = inputFilePath.substr(0, inputFilePath.length() - 3); // retirar obj
     ofstream outputFileTemp(pathToFile+"tmp");
     ifstream inputFileTemp(pathToFile+"tmp");
     ofstream outputFile(pathToFile+"s");
-    if (!outputFileTemp.is_open()) {
-        cerr << "Erro ao criar o arquivo temporario" << endl;
-    }
     string line;
     if (inputFile.is_open()) {
         getline(inputFile, line); // o codigo possui apenas uma linha com instrucoes
         // cout << line << "\n";
-        string instr;
+        string num_read;
+        int instr;
+        int first_label_address=10000;
         string opcode;
         string imaginary_instr;
-        bool copy_inst;
-        string copy_param="-1";
+        bool copy_inst=false;
+        bool branch_inst=false;
+        int copy_param=-1;
         int mem_address = 0;
         int label_counter=0;
-        int data;
         istringstream iss(line);// iss>>instr gets the next instr
         Table<int, int> consts;
         Table<int, int> spaces;
-        while(iss>>instr){
+        while(iss>>num_read){
             // cout << mem_address <<"\n";
             // cout << instr <<"\n";
-            
+            instr = stoi(num_read);
+            if(mem_address==first_label_address) CURRENT_STATE=DATA_STATE;
             
             if(CURRENT_STATE==OPCODE_STATE){
-                imaginary_instr = *imaginary_instructions.get(stoi(instr));
+                imaginary_instr = *imaginary_instructions.get(instr);
                 opcode=imaginary_instr;
                 // cout << opcode <<"\n";
                 translate_IA32 = *ia32_instructions.get(imaginary_instr);
                 labels.add(mem_address, "LABEL"+to_string(label_counter++));
                 outputFileTemp << *labels.get(mem_address) << ":\n";
 
+                if((5<=instr)&&(instr<=8)) branch_inst=true;
+
                 if(imaginary_instr=="COPY")  copy_inst=true; // copy tem dois operands
 
                 if(imaginary_instr=="STOP"){
-                    stopFunction("",outputFileTemp);
-                    CURRENT_STATE=DATA_STATE;
-
+                    stopFunction("",outputFileTemp); // stop nao tem argumento
                 }else{
                     CURRENT_STATE=OPERAND_STATE;
                 }
             }else if(CURRENT_STATE==OPERAND_STATE){
-                if (labels.get(stoi(instr))==nullptr) labels.add(stoi(instr), "LABEL"+to_string(label_counter++));
-                if (used_labels.get(*labels.get(stoi(instr))+":")==nullptr) used_labels.add(*labels.get(stoi(instr))+":", stoi(instr));
+                if(NOT (branch_inst)&&(instr<first_label_address)) first_label_address=instr;
+                branch_inst=false; // resetar a flag todo loop
+
+                if (labels.get(instr)==nullptr) labels.add(instr, "LABEL"+to_string(label_counter++));
+                if (used_labels.get(*labels.get(instr)+":")==nullptr) used_labels.add(*labels.get(instr)+":", instr);
                 
                 if(NOT copy_inst){                    
-                    string* param0_ptr = labels.get(stoi(copy_param));
-                    string* param1_ptr = labels.get(stoi(instr));
+                    string* param0_ptr = labels.get(copy_param);
+                    string* param1_ptr = labels.get(instr);
                     if(param0_ptr!=nullptr){//nesse caso precisamos passar o outro parametro do copy
                         translate_IA32(*param0_ptr +","+ *param1_ptr, outputFileTemp);
                     }else translate_IA32(*param1_ptr, outputFileTemp);
-                    copy_param="-1";
+                    copy_param=-1;
                     CURRENT_STATE=OPCODE_STATE;
                 }else{
                     copy_param=instr;
                     copy_inst=false;
                 }
             }else if(CURRENT_STATE==DATA_STATE){
-                data = stoi(instr);
-                if(data!=0){//data initialized
-                    consts.add(mem_address, data);
-                    // cout << "\t" <<*labels.get(mem_address) << " dd "<< data << "\n";
-                }else{//data not initialized
-                    spaces.add(mem_address, data);
+                if(instr!=0){//instr initialized
+                    consts.add(mem_address, instr);
+                    // cout << "\t" <<*labels.get(mem_address) << " dd "<< instr << "\n";
+                }else{//instr not initialized
+                    spaces.add(mem_address, instr);
                     // cout<<"section .bss\n";
                     // cout << "\t" << *labels.get(mem_address++) <<" resd " << "1\n";
                 }
