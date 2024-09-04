@@ -33,8 +33,12 @@ void multFunction(string , ostream&);
 
 void stopFunction(string , ostream&);
 
-void inputFunction(string , ostream&);
+void callinputFunction(string , ostream&);
 
-void outputFunction(string , ostream&);
+void calloutputFunction(string , ostream&);
+
+void writeinputFunction(ostream&);
+
+void writeoutputFunction(ostream&);
 
 #endif 

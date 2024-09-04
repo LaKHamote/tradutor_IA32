@@ -54,8 +54,8 @@ Table<string, function<void(string, ostream&)>> ia32_instructions({
     {"COPY", copyFunction},
     {"LOAD", loadFunction},
     {"STORE", storeFunction},
-    {"INPUT", inputFunction},
-    {"OUTPUT", outputFunction},
+    {"INPUT", callinputFunction},
+    {"OUTPUT", calloutputFunction},
     {"STOP", stopFunction}
 });
 
@@ -186,130 +186,10 @@ int main(int argc, char* argv[]) {
         // used_labels.show();
         inputFileTemp.close();
         inputFile.close();
-        //------------------------------------------------------adiciona--funcao--de--input--------------------------------------------
-        outputFile << "input_function:\n";
-        outputFile << "    xor ebx, ebx       ; ebx conta quantos bytes foram lidos, começa em zero\n";
-        outputFile << "    xor edx, edx       ; edx será o acumulador para o número final, começa em zero\n";
-        outputFile << "    call le_char       ; Chama a função que lê um caractere do usuário\n\n";
-
-        outputFile << "    cmp cl, 0x0A       ; Compara o caractere lido com '\\n' (0x0A)\n";
-        outputFile << "    je fim             ; Se o caractere lido for '\\n', pula para o fim para encerrar o programa\n";
-        outputFile << "    cmp cl, '-'        ; Compara o caractere lido com '-' para verificar se é negativo\n";
-        outputFile << "    je loop_negativo   ; Se for '-', pula para o loop de números negativos\n";
-        outputFile << "    jmp positivo       ; Caso contrário, pula para o loop de números positivos\n\n";
-
-        outputFile << "loop_positivo:\n";
-        outputFile << "    call le_char       ; Chama a função para ler o próximo caractere\n";
-        outputFile << "    cmp cl, 0x0A       ; Compara o caractere lido com '\\n' (0x0A)\n";
-        outputFile << "    je fim             ; Se o caractere lido for '\\n', pula para o fim para encerrar o programa\n";
-        outputFile << "    jmp positivo       ; Continua o processo de leitura e conversão de números positivos\n\n";
-
-        outputFile << "loop_negativo:\n";
-        outputFile << "    call le_char       ; Chama a função para ler o próximo caractere\n";
-        outputFile << "    cmp cl, 0x0A       ; Compara o caractere lido com '\\n' (0x0A)\n";
-        outputFile << "    je fim             ; Se o caractere lido for '\\n', pula para o fim para encerrar o programa\n";
-        outputFile << "    jmp negativo       ; Continua o processo de leitura e conversão de números negativos\n\n";
-
-        outputFile << "positivo:\n";
-        outputFile << "    sub cl, '0'        ; Converte o caractere numérico em seu valor decimal\n";
-        outputFile << "    movzx eax, cl      ; Move o valor decimal para eax\n";
-        outputFile << "    imul edx, 10       ; Multiplica o acumulador (edx) por 10 para ajustar a posição do dígito\n";
-        outputFile << "    add edx, eax       ; Adiciona o valor atual de eax ao acumulador edx\n";
-        outputFile << "    jmp loop_positivo  ; Volta para o loop de leitura de números positivos\n\n";
-
-        outputFile << "negativo:\n";
-        outputFile << "    sub cl, '0'        ; Converte o caractere numérico em seu valor decimal\n";
-        outputFile << "    movzx eax, cl      ; Move o valor decimal para eax\n";
-        outputFile << "    imul edx, 10       ; Multiplica o acumulador (edx) por 10 para ajustar a posição do dígito\n";
-        outputFile << "    sub edx, eax       ; Subtrai o valor atual de eax do acumulador edx\n";
-        outputFile << "    jmp loop_negativo  ; Volta para o loop de leitura de números negativos\n\n";
-
-        outputFile << "fim:\n";
-        outputFile << "    ; O numero final está em edx!\n";
-        outputFile << "    mov eax, ebx       ; Coloca o contador de bytes em eax tambem\n";
-        outputFile << "    ret\n\n";
-
-        outputFile << "le_char:\n";
-        outputFile << "    ; Função para ler um caractere inserido pelo usuário\n";
-        outputFile << "    ; Recebe o caractere do console e o retorna em cl\n";
-        outputFile << "    ; Se o caractere lido for '\\n', encerra o programa\n\n";
-
-        outputFile << "    add ebx, 1\n\n";
-
-        outputFile << "    push eax               ; Salva o valor atual de eax na pilha\n";
-        outputFile << "    push ebx               ; Salva o valor atual de ebx na pilha\n";
-        outputFile << "    push edx               ; Salva o valor atual de edx na pilha\n\n";
-
-        outputFile << "    sub esp, 1             ; Reserva um byte na pilha\n";
-        outputFile << "    mov eax, 3             ; syscall número 3: sys_read (chamada para leitura)\n";
-        outputFile << "    mov ebx, 0             ; Ler da entrada padrão (stdin)\n";
-        outputFile << "    lea ecx, [esp]         ; Aponta ecx para o local na pilha onde o byte será armazenado\n";
-        outputFile << "    mov edx, 1             ; Define o tamanho do buffer como 1 byte\n";
-        outputFile << "    int 0x80               ; Chamada de sistema para ler o caractere\n";
-        outputFile << "    mov cl, byte [esp]     ; Coloca o byte lido em cl\n";
-        outputFile << "    add esp, 1             ; Restaura o ponteiro da pilha\n";
-        outputFile << "    pop edx                ; Restaura o valor original de edx da pilha\n";
-        outputFile << "    pop ebx                ; Restaura o valor original de ebx da pilha\n";
-        outputFile << "    pop eax                ; Restaura o valor original de eax da pilha\n\n";
-
-        outputFile << "    ret                    ; Retorna da função le_char\n";
-
-
-        //------------------------------------------------------adiciona--funcao--de--output-------------------------------------------
-        outputFile << "output_function:\n";
-        outputFile << "; Lê o numero em EBX e imprime\n";
-        outputFile << "    xor ecx, ecx          ; Zera ECX, usado para contar o número de dígitos (inicialmente 0)\n";
-        outputFile << "    cmp ebx, 0            ; Compara o valor de EBX com 0 para verificar se é negativo\n";
-        outputFile << "    jge n_positivo        ; Se EBX for maior ou igual a 0 (não negativo), salta para o rótulo n_positivo\n\n";
-        outputFile << "    mov eax, '-'          ; Se o número for negativo, coloca o caractere '-' em EAX\n";
-        outputFile << "    call escreve_char     ; Chama a função escreve_char para imprimir o caractere '-'\n";
-        outputFile << "    neg ebx               ; Torna EBX positivo (se estava negativo)\n";
-        outputFile << "n_positivo:\n";
-        outputFile << "    mov eax, ebx          ; Move o valor absoluto de EBX para EAX (preparando para conversão de dígitos)\n\n";
-        outputFile << "convert_loop:\n";
-        outputFile << "    xor edx, edx          ; Zera EDX, necessário para a operação de divisão\n";
-        outputFile << "    mov ebx, 10           ; Carrega o divisor 10 em EBX para a divisão\n";
-        outputFile << "    div ebx               ; Divide EAX por EBX (10), resultado em EAX (quociente) e EDX (resto)\n";
-        outputFile << "    add ecx, 1            ; Incrementa o contador de dígitos (ECX) em 1\n";
-        outputFile << "    add edx, '0'          ; Converte o resto (dígito) em seu valor ASCII\n";
-        outputFile << "    push edx              ; Empilha o caractere ASCII na pilha\n";
-        outputFile << "    cmp eax, 0            ; Compara o quociente (EAX) com 0\n";
-        outputFile << "    jne convert_loop      ; Se o quociente não for 0, continua o loop para processar o próximo dígito\n\n";
-        outputFile << "    mov ebx, ecx          ; Guarda em ebx os bytes escritos\n\n";
-        outputFile << "    add ebx, 1            ; Guarda em ebx os bytes escritos\n\n";
-        outputFile << "imprime_pilha:\n";
-        outputFile << "    cmp ecx, 0            ; Compara o contador de dígitos (ECX) com 0\n";
-        outputFile << "    je end                ; Se ECX for 0 (não há mais dígitos para imprimir), salta para o rótulo end\n";
-        outputFile << "    pop eax               ; Remove o próximo caractere da pilha e coloca em EAX\n";
-        outputFile << "    call escreve_char     ; Chama a função escreve_char para imprimir o caractere\n";
-        outputFile << "    sub ecx, 1            ; Decrementa o contador de dígitos (ECX) em 1\n";
-        outputFile << "    add eax, 1            ; incrementa o contador de bytes (EAX) em 1\n";
-        outputFile << "    jmp imprime_pilha     ; Volta para o início do rótulo imprime_pilha para imprimir o próximo caractere\n\n";
-        outputFile << "escreve_char:\n";
-        outputFile << "    push ecx\n";
-        outputFile << "    push ebx\n";
-        outputFile << "    push edx\n";
-        outputFile << "    push eax\n\n";
-        outputFile << "    mov eax, 4            ; Define o número da syscall para sys_write (4)\n";
-        outputFile << "    mov ebx, 1            ; Define o descritor de arquivo para stdout (1)\n";
-        outputFile << "    mov ecx, esp          ; Define o ponteiro de dados (ECX) como o topo da pilha (contém o caractere a ser escrito)\n";
-        outputFile << "    mov edx, 1            ; Define o número de bytes a serem escritos (1 byte)\n";
-        outputFile << "    int 0x80              ; Chama o kernel para executar a syscall sys_write\n\n";
-        outputFile << "    pop eax\n";
-        outputFile << "    pop edx\n";
-        outputFile << "    pop ebx\n";
-        outputFile << "    pop ecx\n";
-        outputFile << "    ret\n\n";
-        outputFile << "end:\n";
-        outputFile << "    push eax\n";
-        outputFile << "    mov eax, 0x0A        ; Carrega o valor do caractere de nova linha (Line Feed) em EAX\n";
-        outputFile << "    call escreve_char    ; Chama a função escreve_char para imprimir a nova linha\n";
-        outputFile << "    pop eax              ; Preserva o valor de bytes escritos em eax\n";           
-        outputFile << "    mov eax,ebx          ; Guarda os bytes escritos + endline \n";
-        outputFile << "    ret                  ; Retorna da função output_function\n";
-
-    
-
+        writeinputFunction(outputFile); //adiciona--funcao--de--input
+        
+        writeoutputFunction(outputFile); //adiciona--funcao--de--output
+        
         outputFile.close();
 
     }else {
