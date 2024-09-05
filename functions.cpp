@@ -92,7 +92,12 @@ void callinputFunction(string param, ostream& output){
     output << "\t\tpop EBX ; volta valor antigo de EBX\n";
 
     output << "\t\tcall output_function ; Mostra bytes lidos no console\n";
-    
+
+    output << "\t\tmov eax, 4\n";
+    output << "\t\tmov ebx, 1\n";
+    output << "\t\tmov ecx, str_bytes\n";
+    output << "\t\tmov edx, len_bytes\n";
+    output << "\t\tint 0x80\n";
 }
 
 void calloutputFunction(string param, ostream& output){
@@ -100,6 +105,11 @@ void calloutputFunction(string param, ostream& output){
     output << "\t\tpush EAX ; joga valor atual de EAX na stack\n";
     output << "\t\tmov EBX, " "["<<param<<"]" << "\n";
     output << "\t\tcall output_function ; Mostra label que foi colocado em EBX\n";
+
+    output << "\t\tpush EAX\n";
+    output << "\t\tmov EAX, 0x0A        ; Carrega o valor do caractere de nova linha (Line Feed) em EAX\n";
+    output << "\t\tcall escreve_char    ; Chama a função escreve_char para imprimir a nova linha\n";
+    output << "\t\tpop EAX              ; Preserva o valor de bytes escritos em eax\n"; 
     
     output << "\t\tpush EBX ; joga valor atual de EBX na stack\n";
     output << "\t\tpush ECX ; joga valor atual de ECX na stack\n";
@@ -117,6 +127,13 @@ void calloutputFunction(string param, ostream& output){
     output << "\t\tpop ECX ; volta valor antigo de ECX\n";
     output << "\t\tpop EBX ; volta valor antigo de EBX\n";
     output << "\t\tcall output_function ; Mostra bytes escritos em EAX\n";
+
+    output << "\t\tmov eax, 4\n";
+    output << "\t\tmov ebx, 1\n";
+    output << "\t\tmov ecx, str_bytes\n";
+    output << "\t\tmov edx, len_bytes\n";
+    output << "\t\tint 0x80\n";
+
     output << "\t\tpop EAX ; volta valor antigo de EAX\n";
     output << "\t\tpop EBX ; volta valor antigo de EBX\n";
 }
@@ -162,6 +179,7 @@ void writeinputFunction(ostream& output){
 
     output << "fim:\n";
     output << "    \t; O numero final está em edx!\n";
+    output << "    \tsub ebx, 1       ; Coloca o contador de bytes em eax tambem\n";
     output << "    \tmov eax, ebx       ; Coloca o contador de bytes em eax tambem\n";
     output << "    \tret\n\n";
 
@@ -212,7 +230,6 @@ void writeoutputFunction(ostream& output){
     output << "    \tcmp eax, 0            ; Compara o quociente (EAX) com 0\n";
     output << "    \tjne convert_loop      ; Se o quociente não for 0, continua o loop para processar o próximo dígito\n\n";
     output << "    \tmov ebx, ecx          ; Guarda em ebx os bytes escritos\n\n";
-    output << "    \tadd ebx, 1            ; Guarda em ebx os bytes escritos\n\n";
     output << "imprime_pilha:\n";
     output << "    \tcmp ecx, 0            ; Compara o contador de dígitos (ECX) com 0\n";
     output << "    \tje end                ; Se ECX for 0 (não há mais dígitos para imprimir), salta para o rótulo end\n";
@@ -236,11 +253,7 @@ void writeoutputFunction(ostream& output){
     output << "    \tpop ebx\n";
     output << "    \tpop ecx\n";
     output << "    \tret\n\n";
-    output << "end:\n";
-    output << "    \tpush eax\n";
-    output << "    \tmov eax, 0x0A        ; Carrega o valor do caractere de nova linha (Line Feed) em EAX\n";
-    output << "    \tcall escreve_char    ; Chama a função escreve_char para imprimir a nova linha\n";
-    output << "    \tpop eax              ; Preserva o valor de bytes escritos em eax\n";           
+    output << "end:\n";          
     output << "    \tmov eax,ebx          ; Guarda os bytes escritos + endline \n";
     output << "    \tret                  ; Retorna da função output_function\n";
 

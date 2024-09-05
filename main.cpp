@@ -157,9 +157,13 @@ int main(int argc, char* argv[]) {
             outputFile << "\t\t" << *labels.get(elem.first) <<" resd " << "1\n";
         }
         outputFile<<"\nsection .data\n";
-        outputFile<<"\t\tstr_lido db \"Bytes lidos: \", 0x0A \n";
+        outputFile<<"\t\tstr_lido db \"Foram lidos \", 0 \n";
         outputFile<<"\t\tlen_lido equ $-str_lido \n";
-        outputFile<<"\t\tstr_escrito db \"Bytes escritos: \", 0X0A \n";
+
+        outputFile<<"\t\tstr_bytes db \" bytes\", 0xA \n";
+        outputFile<<"\t\tlen_bytes equ $-str_bytes\n";
+
+        outputFile<<"\t\tstr_escrito db \"Foram escritos \", 0 \n";
         outputFile<<"\t\tlen_escrito equ $-str_escrito \n";
 
         for (const auto &elem : *consts.getData()) {
