@@ -54,8 +54,8 @@ Table<string, function<void(string, ostream&)>> ia32_instructions({
     {"COPY", copyFunction},
     {"LOAD", loadFunction},
     {"STORE", storeFunction},
-    {"INPUT", inputFunction},
-    {"OUTPUT", outputFunction},
+    {"INPUT", callinputFunction},
+    {"OUTPUT", calloutputFunction},
     {"STOP", stopFunction}
 });
 
@@ -157,6 +157,15 @@ int main(int argc, char* argv[]) {
             outputFile << "\t\t" << *labels.get(elem.first) <<" resd " << "1\n";
         }
         outputFile<<"\nsection .data\n";
+        outputFile<<"\t\tstr_lido db \"Foram lidos \", 0 \n";
+        outputFile<<"\t\tlen_lido equ $-str_lido \n";
+
+        outputFile<<"\t\tstr_bytes db \" bytes\", 0xA \n";
+        outputFile<<"\t\tlen_bytes equ $-str_bytes\n";
+
+        outputFile<<"\t\tstr_escrito db \"Foram escritos \", 0 \n";
+        outputFile<<"\t\tlen_escrito equ $-str_escrito \n";
+
         for (const auto &elem : *consts.getData()) {
             outputFile << "\t\t" <<*labels.get(elem.first) << " dd "<< elem.second << "\n";
         }
@@ -181,6 +190,10 @@ int main(int argc, char* argv[]) {
         // used_labels.show();
         inputFileTemp.close();
         inputFile.close();
+        writeinputFunction(outputFile); //adiciona--funcao--de--input
+        
+        writeoutputFunction(outputFile); //adiciona--funcao--de--output
+        
         outputFile.close();
 
     }else {
