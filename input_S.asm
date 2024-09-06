@@ -3,7 +3,7 @@ section .bss
     param1 resd 5
 
 section .data 
-    output1 db "LU"
+    output1 db "LUssssss"
     param2 dd 5
     str_zero dd 48
 
@@ -23,11 +23,11 @@ global _start
 
 _start:
     push param1             ;ponteiro para onde quardar
-    push DWORD [param2]     ;numero de bytes pra quardar
+    push 5                  ;numero de bytes pra quardar
     call s_input_function
 
     push output1            ;ponteiro para do que escrever
-    push DWORD [param2]         
+    push 5         
     call s_output_function
 
 

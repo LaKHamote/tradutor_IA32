@@ -269,7 +269,7 @@ void callStrInputFunction(string param, ostream& output){
     string param1 = param.substr(0, c_index);
     string param2 = param.substr(c_index + 1);
     output << "\t\tpush ["<<param1<<"]            ;ponteiro para onde quardar\n";
-    output << "\t\tpush DWORD ["<<param2<<"]     ;numero de bytes pra quardar\n";
+    output << "\t\tpush "<<param2<<"              ;numero de bytes pra quardar\n";
     output << "\t\tcall s_input_function\n";
 }
 
@@ -278,7 +278,7 @@ void callStrOutputFunction(string param, ostream& output){
     string param1 = param.substr(0, c_index);
     string param2 = param.substr(c_index + 1);
     output << "\t\tpush ["<<param1<<"]            ;ponteiro para do que escrever\n";
-    output << "\t\tpush DWORD ["<<param2<<"]     ;numero de bytes pra escrever\n";
+    output << "\t\tpush "<<param2<<"              ;numero de bytes pra escrever\n";
     output << "\t\tcall s_output_function\n";
     
 }
