@@ -167,6 +167,7 @@ int main(int argc, char* argv[]) {
 
         outputFile<<"\t\tstr_escrito db \"Foram escritos \", 0 \n";
         outputFile<<"\t\tlen_escrito equ $-str_escrito \n";
+        outputFile<<"\t\tnwln db 0xA\n";
 
         for (const auto &elem : *consts.getData()) {
             outputFile << "\t\t" <<*labels.get(elem.first) << " dd "<< elem.second << "\n";
