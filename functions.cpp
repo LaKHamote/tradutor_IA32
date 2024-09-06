@@ -259,3 +259,19 @@ void writeoutputFunction(ostream& output){
 
 
 }
+
+void callStrInputFunction(string param, ostream& output){
+
+}
+
+void callStrOutputFunction(string param, ostream& output){
+    
+}
+
+void writeStrInputFunction(string param, ostream& output){
+
+}
+
+void writeStrOutputFunction(string param, ostream& output){
+    
+}
