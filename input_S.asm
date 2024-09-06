@@ -27,7 +27,7 @@ _start:
     call s_input_function
 
     push output1            ;ponteiro para do que escrever
-    push DWORD [param2]     ;numero de bytes pra escrever
+    push DWORD [param2]         
     call s_output_function
 
 

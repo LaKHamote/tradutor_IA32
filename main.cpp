@@ -34,7 +34,9 @@ Table<int, string> imaginary_instructions({
     {11, "STORE"},
     {12, "INPUT"},
     {13, "OUTPUT"},
-    {14, "STOP"}
+    {14, "STOP"},
+    {15, "S_INPUT"},
+    {16, "S_OUTPUT"}
 });
 
 // A sample function to be used in the map
@@ -86,7 +88,7 @@ int main(int argc, char* argv[]) {
         string imaginary_instr;
         bool copy_inst=false;
         bool branch_inst=false;
-        int copy_param=-1;
+        int secondary_param=-1;
         int mem_address = 0;
         int label_counter=0;
         istringstream iss(line);// iss>>instr gets the next instr
@@ -123,15 +125,15 @@ int main(int argc, char* argv[]) {
                 if (used_labels.get(*labels.get(instr)+":")==nullptr) used_labels.add(*labels.get(instr)+":", instr);
                 
                 if(NOT copy_inst){                    
-                    string* param0_ptr = labels.get(copy_param);
+                    string* param0_ptr = labels.get(secondary_param);
                     string* param1_ptr = labels.get(instr);
-                    if(param0_ptr!=nullptr){//nesse caso precisamos passar o outro parametro do copy
+                    if(param0_ptr!=nullptr){//nesse caso o opcode teve dois parametros e temos que ver ser o segundo é label(COPY) ou numero(S_I/O)
                         translate_IA32(*param0_ptr +","+ *param1_ptr, outputFileTemp);
                     }else translate_IA32(*param1_ptr, outputFileTemp);
-                    copy_param=-1;
+                    secondary_param=-1;
                     CURRENT_STATE=OPCODE_STATE;
                 }else{
-                    copy_param=instr;
+                    secondary_param=instr;
                     copy_inst=false;
                 }
             }else if(CURRENT_STATE==DATA_STATE){
@@ -193,6 +195,10 @@ int main(int argc, char* argv[]) {
         writeinputFunction(outputFile); //adiciona--funcao--de--input
         
         writeoutputFunction(outputFile); //adiciona--funcao--de--output
+
+        writeStrInputFunction(outputFile);
+
+        writeStrOutputFunction(outputFile);
         
         outputFile.close();
 
