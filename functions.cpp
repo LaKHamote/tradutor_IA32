@@ -71,7 +71,8 @@ void stopFunction(string param, ostream& output){
 }
 
 void callinputFunction(string param, ostream& output){
-    output << "\t\tcall input_function ; Input será carregado em EDX, numero de bytes lidos em EBX e EAX\n";
+    output << "; Input não recebe argumentos, logo não há push para a stack!.\n";
+    output << "\t\tcall input_function ; Input será carregado em EDX, numero de bytes lidos em EBX e EAX.\n";
     output << "\t\tmov " << "["<<param<<"], " << "EDX" << "\n";
 
     
@@ -91,6 +92,7 @@ void callinputFunction(string param, ostream& output){
     output << "\t\tpop ECX ; volta valor antigo de ECX\n";
     output << "\t\tpop EBX ; volta valor antigo de EBX\n";
 
+    output << "\t\tpush EBX ; joga valor atual de EBX na stack, para argumento de output\n";
     output << "\t\tcall output_function ; Mostra bytes lidos no console\n";
 
     output << "\t\tmov eax, 4\n";
@@ -101,9 +103,8 @@ void callinputFunction(string param, ostream& output){
 }
 
 void calloutputFunction(string param, ostream& output){
-    output << "\t\tpush EBX ; joga valor atual de EBX na stack\n";
-    output << "\t\tpush EAX ; joga valor atual de EAX na stack\n";
     output << "\t\tmov EBX, " "["<<param<<"]" << "\n";
+    output << "\t\tpush EBX" << "\n";
     output << "\t\tcall output_function ; Mostra label que foi colocado em EBX\n";
 
     output << "\t\tpush EAX\n";
@@ -126,6 +127,7 @@ void calloutputFunction(string param, ostream& output){
     output << "\t\tpop EDX ; volta valor antigo de EDX\n";
     output << "\t\tpop ECX ; volta valor antigo de ECX\n";
     output << "\t\tpop EBX ; volta valor antigo de EBX\n";
+    output << "\t\t push EBX ; volta valor antigo de EBX\n";
     output << "\t\tcall output_function ; Mostra bytes escritos em EAX\n";
 
     output << "\t\tmov eax, 4\n";
@@ -134,8 +136,6 @@ void calloutputFunction(string param, ostream& output){
     output << "\t\tmov edx, len_bytes\n";
     output << "\t\tint 0x80\n";
 
-    output << "\t\tpop EAX ; volta valor antigo de EAX\n";
-    output << "\t\tpop EBX ; volta valor antigo de EBX\n";
 }
 
 
@@ -211,7 +211,9 @@ void writeinputFunction(ostream& output){
 
 void writeoutputFunction(ostream& output){
     output << "\n\noutput_function:\n";
-    output << "; Lê o numero em EBX e imprime\n";
+    output << "; Lê o numero passado em [ebp+8] e imprime\n";
+    output << "    \tenter 0,0             ; Entra no contexto de pilha em que [ebp+8] eh o argumento passado\n";
+    output << "    \tmov ebx, [ebp+8]      ; Pega o argumento passado por PILHA e poem em ebx\n";
     output << "    \txor ecx, ecx          ; Zera ECX, usado para contar o número de dígitos (inicialmente 0)\n";
     output << "    \tcmp ebx, 0            ; Compara o valor de EBX com 0 para verificar se é negativo\n";
     output << "    \tjge n_positivo        ; Se EBX for maior ou igual a 0 (não negativo), salta para o rótulo n_positivo\n\n";
@@ -254,8 +256,9 @@ void writeoutputFunction(ostream& output){
     output << "    \tpop ecx\n";
     output << "    \tret\n\n";
     output << "end:\n";          
-    output << "    \tmov eax,ebx          ; Guarda os bytes escritos + endline \n";
-    output << "    \tret                  ; Retorna da função output_function\n";
+    output << "    \tmov eax,ebx           ; Guarda os bytes escritos + endline \n";
+    output << "    \tleave                 ; Sai do contexto de pilha criado para receber o argumento \n";
+    output << "    \tret 4                 ; Retorna da função output_function\n";
 
 
 }
