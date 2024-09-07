@@ -58,7 +58,9 @@ Table<string, function<void(string, ostream&)>> ia32_instructions({
     {"STORE", storeFunction},
     {"INPUT", callinputFunction},
     {"OUTPUT", calloutputFunction},
-    {"STOP", stopFunction}
+    {"STOP", stopFunction},
+    {"S_INPUT", callStrInputFunction},
+    {"S_OUTPUT", callStrOutputFunction}
 });
 
 Table<int, string> labels;
@@ -83,7 +85,7 @@ int main(int argc, char* argv[]) {
         // cout << line << "\n";
         string num_read;
         int instr;
-        int first_label_address=10000;
+        int first_data_address=10000;
         string opcode;
         string imaginary_instr;
         bool dbl_oper_inst=false;
@@ -100,14 +102,14 @@ int main(int argc, char* argv[]) {
             // cout << mem_address <<"\n";
             // cout << instr <<"\n";
             instr = stoi(num_read);
-            if(mem_address==first_label_address) CURRENT_STATE=DATA_STATE;
+            if(mem_address==first_data_address) CURRENT_STATE=DATA_STATE; // achar o fim do section text, que será o STOP ou um JUMP, qual tiver o maior endereço
             
             if(CURRENT_STATE==OPCODE_STATE){
                 imaginary_instr = *imaginary_instructions.get(instr);
                 opcode=imaginary_instr;
                 // cout << opcode <<"\n";
                 translate_IA32 = *ia32_instructions.get(imaginary_instr);
-                labels.add(mem_address, "LABEL"+to_string(label_counter++));
+                labels.add(mem_address, "BRANCH"+to_string(label_counter++));
                 outputFileTemp << *labels.get(mem_address) << ":\n";
 
                 if((5<=instr)&&(instr<=8)) branch_inst=true;
@@ -126,12 +128,12 @@ int main(int argc, char* argv[]) {
                     CURRENT_STATE=OPERAND_STATE;
                 }
             }else if(CURRENT_STATE==OPERAND_STATE){
-                if(NOT (branch_inst)&&(instr<first_label_address)) first_label_address=instr;
+                if((dbl_oper_inst) || (NOT s_IO_inst)){ // só não entra pra segunda instrucao de S_IO
+                    if((NOT branch_inst)&&(instr<first_data_address)) first_data_address=instr; // achei um referencia para acessar dados de uma linha menor da que eu achei q iniciava os dados -> atlz linha inicial de dados
+                    if (labels.get(instr)==nullptr) labels.add(instr, "LABEL"+to_string(label_counter++));
+                    if (used_labels.get(*labels.get(instr)+":")==nullptr) used_labels.add(*labels.get(instr)+":", instr);
+                }
                 branch_inst=false; // resetar a flag todo loop
-
-                if (labels.get(instr)==nullptr) labels.add(instr, "LABEL"+to_string(label_counter++));
-                if (used_labels.get(*labels.get(instr)+":")==nullptr) used_labels.add(*labels.get(instr)+":", instr);
-                
                 if(NOT dbl_oper_inst){                    
                     string* param0_ptr = labels.get(secondary_param);
                     string* param1_ptr = labels.get(instr);
@@ -168,9 +170,22 @@ int main(int argc, char* argv[]) {
         }
 
         outputFile<<"section .bss\n";
+        int buffer_size;
+        string* buffer_name_ptr=nullptr;
         for (const auto &elem : *spaces.getData()) {
-            outputFile << "\t\t" << *labels.get(elem.first) <<" resd " << "1\n";
+            if(labels.get(elem.first)==nullptr){
+                buffer_size++;
+            }else if(buffer_name_ptr!=nullptr){
+                outputFile << "\t\t" << *buffer_name_ptr <<" resd "<<buffer_size<<"\n";
+                buffer_name_ptr=labels.get(elem.first);
+                buffer_size=1;
+            }else{
+                buffer_name_ptr=labels.get(elem.first);
+                buffer_size=1;
+            }    
         }
+        outputFile << "\t\t" << *buffer_name_ptr <<" resd "<<buffer_size<<"\n"; // tem q fazer mais uma vez no final dos spaces
+
         outputFile<<"\nsection .data\n";
         outputFile<<"\t\tstr_lido db \"Foram lidos \", 0 \n";
         outputFile<<"\t\tlen_lido equ $-str_lido \n";
@@ -215,6 +230,13 @@ int main(int argc, char* argv[]) {
         writeStrOutputFunction(outputFile);
         
         outputFile.close();
+
+        // cout<<"\n\t----------------LABELS----------------\n";
+        // labels.show();
+        // cout<<"\n\t----------------USED_LABELS----------------\n";
+        // used_labels.show();
+        // cout<<"\n\t----------------spaces----------------\n";
+        // spaces.show();
 
     }else {
         cerr << "Não foi possível abrir o arquivo." << "\n";
