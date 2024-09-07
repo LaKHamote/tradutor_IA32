@@ -41,4 +41,12 @@ void writeinputFunction(ostream&);
 
 void writeoutputFunction(ostream&);
 
+void callStrInputFunction(string ,ostream&);
+
+void callStrOutputFunction(string ,ostream&);
+
+void writeStrInputFunction(ostream&);
+
+void writeStrOutputFunction(ostream&);
+
 #endif 

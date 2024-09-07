@@ -1,5 +1,6 @@
 #include "functions.hpp"
-
+#include <fstream>
+#include <sstream>
 
 
 void init(ostream& output){
@@ -26,10 +27,10 @@ void addFunction(string param, ostream& output){
 
 void copyFunction(string param, ostream& output){
     size_t c_index = param.find(',');
-    string p1 = param.substr(0, c_index);
-    string p2 = param.substr(c_index + 1);
-    output << "\t\tmov ECX, ["<<p1<<"]\n";
-    output << "\t\tmov ["<<p2<<"], ECX\n";
+    string param1 = param.substr(0, c_index);
+    string param2 = param.substr(c_index + 1);
+    output << "\t\tmov ECX, ["<<param1<<"]\n";
+    output << "\t\tmov ["<<param2<<"], ECX\n";
 }
 
 void jumpPosFunction(string param, ostream& output){
@@ -259,6 +260,40 @@ void writeoutputFunction(ostream& output){
     output << "    \tmov eax,ebx           ; Guarda os bytes escritos + endline \n";
     output << "    \tleave                 ; Sai do contexto de pilha criado para receber o argumento \n";
     output << "    \tret 4                 ; Retorna da função output_function\n";
+}
 
+void callStrInputFunction(string param, ostream& output){
+    size_t c_index = param.find(',');
+    string param1 = param.substr(0, c_index);
+    string param2 = param.substr(c_index + 1);
+    output << "\t\tpush "<<param1<<"            ;ponteiro para onde quardar\n";
+    output << "\t\tpush "<<param2<<"              ;numero de bytes pra quardar\n";
+    output << "\t\tcall s_input_function\n";
+}
 
+void callStrOutputFunction(string param, ostream& output){
+    size_t c_index = param.find(',');
+    string param1 = param.substr(0, c_index);
+    string param2 = param.substr(c_index + 1);
+    output << "\t\tpush "<<param1<<"            ;ponteiro para do que escrever\n";
+    output << "\t\tpush "<<param2<<"              ;numero de bytes pra escrever\n";
+    output << "\t\tcall s_output_function\n";
+}
+
+void writeStrInputFunction(ostream& output){
+    ifstream file("../bin/s_input_function.txt");
+    if (!file.is_open()) {
+        throw invalid_argument("\n\n\tArquivo nao encontrado\n");
+    }
+    output << file.rdbuf();
+    file.close();
+}
+
+void writeStrOutputFunction(ostream& output){
+    ifstream file("../bin/s_output_function.txt");
+    if (!file.is_open()) {
+        throw invalid_argument("\n\n\tArquivo nao encontrado\n");
+    }
+    output << file.rdbuf();
+    file.close();
 }

@@ -1,0 +1,40 @@
+
+
+s_output_function:
+    enter 0,0
+
+    push EBX
+    push ECX
+    push EDX
+
+    mov EAX, 4
+    mov EBX, 1
+    mov ECX, [EBP+12]
+    mov EDX, [EBP+8]
+    int 80h
+    mov EAX, 4
+    mov EBX, 1
+    mov ECX, nwln
+    mov EDX, 1
+    int 80h
+
+    mov EAX, 4
+    mov EBX, 1
+    mov ECX, str_escrito
+    mov EDX, len_escrito
+    int 0x80
+    push DWORD [EBP+8]
+    call output_function
+    mov EAX, 4
+    mov EBX, 1
+    mov ECX, str_bytes
+    mov EDX, len_bytes
+    int 80h
+
+    pop EDX
+    pop ECX
+    pop EBX
+
+    leave
+
+    ret
