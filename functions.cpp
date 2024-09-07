@@ -260,15 +260,13 @@ void writeoutputFunction(ostream& output){
     output << "    \tmov eax,ebx           ; Guarda os bytes escritos + endline \n";
     output << "    \tleave                 ; Sai do contexto de pilha criado para receber o argumento \n";
     output << "    \tret 4                 ; Retorna da função output_function\n";
-
-
 }
 
 void callStrInputFunction(string param, ostream& output){
     size_t c_index = param.find(',');
     string param1 = param.substr(0, c_index);
     string param2 = param.substr(c_index + 1);
-    output << "\t\tpush ["<<param1<<"]            ;ponteiro para onde quardar\n";
+    output << "\t\tpush "<<param1<<"            ;ponteiro para onde quardar\n";
     output << "\t\tpush "<<param2<<"              ;numero de bytes pra quardar\n";
     output << "\t\tcall s_input_function\n";
 }
@@ -277,10 +275,9 @@ void callStrOutputFunction(string param, ostream& output){
     size_t c_index = param.find(',');
     string param1 = param.substr(0, c_index);
     string param2 = param.substr(c_index + 1);
-    output << "\t\tpush ["<<param1<<"]            ;ponteiro para do que escrever\n";
+    output << "\t\tpush "<<param1<<"            ;ponteiro para do que escrever\n";
     output << "\t\tpush "<<param2<<"              ;numero de bytes pra escrever\n";
     output << "\t\tcall s_output_function\n";
-    
 }
 
 void writeStrInputFunction(ostream& output){

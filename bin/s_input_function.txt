@@ -24,6 +24,9 @@ loop:
     mov EAX, [EBX] ; ler um char do buffer
     cmp EAX, 0Ah ; indice final do buffer
     jz all_read
+    mov EAX, [EBX] ; ler um char do buffer
+    cmp EAX, 0Dh ; indice final do buffer
+    jz all_read
     add num_bytes, 1
     add EBX, 1
     jmp loop
@@ -41,6 +44,8 @@ all_read:
     mov ECX, str_bytes
     mov EDX, len_bytes
     int 80h
+
+    mov EAX, num_bytes
 
     pop EDX
     pop ECX
