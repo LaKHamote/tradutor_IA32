@@ -63,6 +63,7 @@ void divFunction(string param, ostream& output){
 void multFunction(string param, ostream& output){
     output << "\t\tmov EBX, ["<<param<<"]\n";
     output << "\t\timul EBX\n";
+    output << "\t\tjo overflow_detected\n";
 }
 
 void stopFunction(string param, ostream& output){

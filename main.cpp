@@ -197,6 +197,9 @@ int main(int argc, char* argv[]) {
         outputFile<<"\t\tlen_escrito equ $-str_escrito \n";
         outputFile<<"\t\tnwln db 0xA\n";
 
+        outputFile<<"\t\toverflow_msg db \"Ocorreu overflow numa multiplicação \", 0 \n";
+        outputFile<<"\t\toverflow_msg_len equ $-overflow_msg \n";
+
         for (const auto &elem : *consts.getData()) {
             outputFile << "\t\t" <<*labels.get(elem.first) << " dd "<< elem.second << "\n";
         }
@@ -228,6 +231,14 @@ int main(int argc, char* argv[]) {
         writeStrInputFunction(outputFile);
 
         writeStrOutputFunction(outputFile);
+        
+        outputFile<<"\n\noverflow_detected:\n";
+        outputFile << "\t\tmov eax, 4\n";
+        outputFile << "\t\tmov ebx, 1\n";
+        outputFile << "\t\tmov ecx, overflow_msg\n";
+        outputFile << "\t\tmov edx, overflow_msg_len\n";
+        outputFile << "\t\tint 0x80\n";
+        stopFunction("", outputFile);
         
         outputFile.close();
 

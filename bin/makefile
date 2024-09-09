@@ -27,6 +27,6 @@ ia_32:
 	rm -f ../$(path:.s=.exe)
 
 run:
-	+$(MAKE)
-	+$(MAKE) ia_32 path=$(path:.obj=.s)
+	+$(MAKE)	asm
+	+$(MAKE) 	ia_32 path=$(path:.obj=.s)
 	
