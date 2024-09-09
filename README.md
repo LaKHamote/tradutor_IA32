@@ -3,6 +3,10 @@
 ## Prof. Bruno Macchiavello
 ## Alunos:
 - Lucas Corrêa Boaventura - 211038262
+- Enzo Zanetti Celentano - 211026495
+
+## Observações
+Esse trabalho foi feito em conjunto pelo alunos, porém possui a solução de S_INPUT e S_OUTPUT implementada por Lucas Corrêa (mª 211038262)
 
 ### Como rodar
 O programa foi feito em dois arquivos com main para gerar o executavel TRADUTOR.
