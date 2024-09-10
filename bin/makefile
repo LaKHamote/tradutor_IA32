@@ -4,9 +4,6 @@ objs = ./dataStructure.o ./functions.o
 all:	$(objs) $(cpp_source)
 	gcc -std=c++17 -Wall ./*.o $(cpp_source) -lstdc++ -o ../tradutor 
 
-asm:	tradutor.exe
-	./tradutor.exe .$(path)
-
 tradutor.exe:	$(objs) $(cpp_source)
 	gcc -std=c++17 -Wall ./*.o $(cpp_source) -lstdc++ -o tradutor.exe
 
@@ -15,6 +12,9 @@ dataStructure.o:	../dataStructure.cpp
 
 functions.o:	../functions.cpp
 	gcc -std=c++17 -Wall -c ../functions.cpp
+
+asm:	tradutor.exe
+	./tradutor.exe .$(path)
 
 ia_32:
 	nasm -f elf .$(path) -o .$(path:.s=.o)
