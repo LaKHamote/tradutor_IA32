@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
     ifstream inputFile(argv[1]);
     string inputFilePath = argv[1];
     if (!inputFile.is_open()) {
-        throw invalid_argument("\n\n\tArquivo nao encontrado\n");
+        throw invalid_argument("\n\n\tArquivo obj nao encontrado\n");
     }
     string pathToFile = inputFilePath.substr(0, inputFilePath.length() - 3); // retirar obj
     ofstream outputFileTemp(pathToFile+"tmp");

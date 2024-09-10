@@ -9,7 +9,7 @@ clean:
 clean_examples:
 	rm -f ./examples/*.o
 	rm -f ./examples/*.exe
-	rm -f ./examples/*.temp
+	rm -f ./examples/*.tmp
 	rm -f ./examples/*.out
 	rm -f ./examples/*.s
 

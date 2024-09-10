@@ -6,7 +6,7 @@
 - Enzo Zanetti Celentano - 211026495
 
 ## Observações
-Esse trabalho foi feito em conjunto pelo alunos, porém possui a solução de S_INPUT e S_OUTPUT implementada por Lucas Corrêa (mª 211038262)
+Esse trabalho foi feito em conjunto pelo alunos, porém possui a solução de S_INPUT e S_OUTPUT implementada apenas por Lucas Corrêa (mª 211038262)
 
 ### Como rodar
 O programa foi feito em dois arquivos com main para gerar o executavel TRADUTOR.
@@ -16,4 +16,4 @@ OBS: Caso não consiga compilar, existe um executável disponível na pasta exec
 ### Sobre I/O
 O local o tradutor (seu/caminho/...../tradutor/bin) vai ser onde o tradutor vai sair.
 exemplo:
-- .\tradutor ../examples/prog5.obj ../examples/prog6.obj ---> gera -----> ../examples/prog6.s
+- .\tradutor /your_path/fileName.obj ---> gera -----> /your_path/fileName.s

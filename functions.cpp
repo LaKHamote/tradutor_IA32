@@ -282,19 +282,93 @@ void callStrOutputFunction(string param, ostream& output){
 }
 
 void writeStrInputFunction(ostream& output){
-    ifstream file("../bin/s_input_function.txt");
-    if (!file.is_open()) {
-        throw invalid_argument("\n\n\tArquivo nao encontrado\n");
-    }
-    output << file.rdbuf();
-    file.close();
+    output <<"\n\ns_input_function: \n";
+    output <<"\t    enter 4,0 ; criar variavel para contar numero de bytes lidos \n";
+    output <<"\t    %define num_bytes dword [EBP-4] \n";
+    output <<"\t    push EBX \n";
+    output <<"\t    push ECX \n";
+    output <<"\t    push EDX \n";
+    output <<"\t    mov EAX, 3 \n";
+    output <<"\t    mov EBX, 0 \n";
+    output <<"\t    mov ECX, [EBP+12] \n";
+    output <<"\t    mov EDX, [EBP+8] \n";
+    output <<"\t    int 80h \n";
+    output <<"\t    mov num_bytes, 0 \n";
+    output <<"\t    mov EBX, [EBP+12] ; ponteiro pro inicio do buffer \n";
+    output <<"\t  loop: \n";
+    output <<"\t    mov EAX, [EBP+8] ; limite de bytes lidos \n";
+    output <<"\t    cmp num_bytes, EAX \n";
+    output <<"\t    jz all_read \n";
+    output <<"\t    mov EAX, [EBX] ; ler um char do buffer \n";
+    output <<"\t    cmp EAX, 0Ah ; indice final do buffer \n";
+    output <<"\t    jz all_read \n";
+    output <<"\t    mov EAX, [EBX] ; ler um char do buffer \n";
+    output <<"\t    cmp EAX, 0Dh ; indice final do buffer \n";
+    output <<"\t    jz all_read \n";
+    output <<"\t    add num_bytes, 1 \n";
+    output <<"\t    add EBX, 1 \n";
+    output <<"\t    jmp loop \n";
+    output <<"\t  all_read: \n";
+    output <<"\t    mov eax, 4 \n";
+    output <<"\t    mov ebx, 1 \n";
+    output <<"\t    mov ecx, str_lido \n";
+    output <<"\t    mov edx, len_lido \n";
+    output <<"\t    int 0x80 \n";
+    output <<"\t    push num_bytes \n";
+    output <<"\t    call output_function \n";
+    output <<"\t    mov EAX, 4 \n";
+    output <<"\t    mov EBX, 1 \n";
+    output <<"\t    mov ECX, str_bytes \n";
+    output <<"\t    mov EDX, len_bytes \n";
+    output <<"\t    int 80h \n";
+    output <<"\t    mov EAX, num_bytes \n";
+    output <<"\t    pop EDX \n";
+    output <<"\t    pop ECX \n";
+    output <<"\t    pop EBX \n";
+    output <<"\t    leave \n";
+    output <<"\t    ret 8 \n";
 }
 
 void writeStrOutputFunction(ostream& output){
-    ifstream file("../bin/s_output_function.txt");
-    if (!file.is_open()) {
-        throw invalid_argument("\n\n\tArquivo nao encontrado\n");
-    }
-    output << file.rdbuf();
-    file.close();
+    // ifstream file("../bin/s_output_function.txt"); this path depends where u run the .exe
+    // if (!file.is_open()) {
+    //     throw invalid_argument("\n\n\tArquivo s_output_function nao encontrado\n");
+    // }
+    // output << file.rdbuf();
+    // file.close();
+    output <<"\n\ns_output_function: \n";
+    output <<"\t    enter 0,0 \n";
+    output <<"\t    push EBX \n";
+    output <<"\t    push ECX \n";
+    output <<"\t    push EDX \n";
+    output <<"\t    mov EAX, 4 \n";
+    output <<"\t    mov EBX, 1 \n";
+    output <<"\t    mov ECX, [EBP+12] \n";
+    output <<"\t    mov EDX, [EBP+8] \n";
+    output <<"\t    int 80h \n";
+    output <<"\t    push EAX ; coloco na pilha o valor de bytes escritos \n";
+    output <<"\t    mov EAX, 4 \n";
+    output <<"\t    mov EBX, 1 \n";
+    output <<"\t    mov ECX, nwln \n";
+    output <<"\t    mov EDX, 1 \n";
+    output <<"\t    int 80h \n";
+    output <<"\t    mov EAX, 4 \n";
+    output <<"\t    mov EBX, 1 \n";
+    output <<"\t    mov ECX, str_escrito \n";
+    output <<"\t    mov EDX, len_escrito \n";
+    output <<"\t    int 0x80 \n";
+    output <<"\t    pop EAX \n";
+    output <<"\t    push EAX ; apenas coloquei explicito o argumento da funcao \n";
+    output <<"\t    call output_function \n";
+    output <<"\t    mov EAX, 4 \n";
+    output <<"\t    mov EBX, 1 \n";
+    output <<"\t    mov ECX, str_bytes \n";
+    output <<"\t    mov EDX, len_bytes \n";
+    output <<"\t    int 80h \n";
+    output <<"\t    pop EAX ; numero de bytes lido esta em EAX \n";
+    output <<"\t    pop EDX \n";
+    output <<"\t    pop ECX \n";
+    output <<"\t    pop EBX \n";
+    output <<"\t    leave \n";
+    output <<"\t    ret 8 \n";
 }
