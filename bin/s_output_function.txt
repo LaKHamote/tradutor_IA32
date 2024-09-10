@@ -33,6 +33,8 @@ s_output_function:
     mov EDX, len_bytes
     int 80h
 
+    pop EAX ; numero de bytes lido esta em EAX
+
     pop EDX
     pop ECX
     pop EBX
