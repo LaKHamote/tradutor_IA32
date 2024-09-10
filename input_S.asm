@@ -53,19 +53,19 @@ s_input_function:
     mov EDX, [EBP+8]
     int 80h
 
-    mov num_bytes, 0
-    mov EBX, [EBP+12] ; ponteiro pro inicio do buffer
-loop:
-    mov EAX, [EBP+8] ; limite de bytes lidos
-    cmp num_bytes, EAX
-    jz all_read
-    mov EAX, [EBX] ; ler um char do buffer
-    cmp EAX, 0Ah ; indice final do buffer
-    jz all_read
-    add num_bytes, 1
-    add EBX, 1
-    jmp loop
-all_read:
+    mov num_bytes, eax
+;     mov EBX, [EBP+12] ; ponteiro pro inicio do buffer
+; loop:
+;     mov EAX, [EBP+8] ; limite de bytes lidos
+;     cmp num_bytes, EAX
+;     jz all_read
+;     mov EAX, [EBX] ; ler um char do buffer
+;     cmp EAX, 0Ah ; indice final do buffer
+;     jz all_read
+;     add num_bytes, 1
+;     add EBX, 1
+;     jmp loop
+; all_read:
 
     mov eax, 4
     mov ebx, 1

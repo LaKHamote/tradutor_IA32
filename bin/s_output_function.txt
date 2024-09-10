@@ -12,6 +12,7 @@ s_output_function:
     mov ECX, [EBP+12]
     mov EDX, [EBP+8]
     int 80h
+    push EAX ; coloco na pilha o valor de bytes escritos
     mov EAX, 4
     mov EBX, 1
     mov ECX, nwln
@@ -23,7 +24,8 @@ s_output_function:
     mov ECX, str_escrito
     mov EDX, len_escrito
     int 0x80
-    push DWORD [EBP+8]
+    pop EAX
+    push EAX ; apenas coloquei explicito o argumento da funcao
     call output_function
     mov EAX, 4
     mov EBX, 1
@@ -37,4 +39,4 @@ s_output_function:
 
     leave
 
-    ret
+    ret 8
