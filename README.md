@@ -13,11 +13,11 @@ O programa foi feito em dois arquivos mais a main para gerar o executável TRADU
 Para rodar, foi feito um makefile para compilar com o GCC os diferentes códigos. Portanto, utilize 'make' no terminal no diretorio raiz do projeto para montar o programa, gerando os executaveis, na pasta /bin(tradutor.exe) e na root(tradutor) para facilitar o script de correção.
 Caso não queira utilizar 'make', os comandos utilizados para compilação, ligação e execução encontram-se em /bin/makefile
 
-OBS: Caso não consiga compilar, existe um executável disponível na root.
+OBS: Caso não consiga compilar, existe um executável disponível na pasta executavel.
 
 ### Arquivos teste
 Existem alguns arquivos de teste .obj criados em /examples.
-Utilizandoo comando  'make run path=./examples/EXEMPLO.obj' pode-se gerar o arquivo .s criado e executá-lo.
+Utilizando o comando 'make run path=./examples/EXEMPLO.obj' pode-se gerar o arquivo .s criado e executá-lo.
 
 ### Sobre I/O
 O local o tradutor (seu/caminho/...../tradutor/bin) vai ser onde o tradutor vai sair.
