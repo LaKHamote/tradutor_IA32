@@ -17,7 +17,7 @@ OBS: Caso não consiga compilar, existe um executável disponível na pasta exec
 
 ### Arquivos teste
 Existem alguns arquivos de teste .obj criados em /examples.
-Utilizando o comando 'make run path=./examples/EXEMPLO.obj' pode-se gerar o arquivo .s criado e executá-lo.
+Utilizando, na root, o comando 'make run path=./examples/EXEMPLO.obj' pode-se gerar o arquivo .s criado e executá-lo automaticamente.
 
 ### Sobre I/O
 O local o tradutor (seu/caminho/...../tradutor/bin) vai ser onde o tradutor vai sair.
