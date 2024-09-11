@@ -12,7 +12,8 @@ Esse trabalho foi feito em conjunto pelo alunos, porém possui a solução de S_
 O programa foi feito em dois arquivos mais a main para gerar o executável TRADUTOR.
 Para rodar, foi feito um makefile para compilar com o GCC os diferentes códigos. Portanto, utilize 'make' no terminal no diretorio raiz do projeto para montar o programa, gerando os executaveis, na pasta /bin(tradutor.exe) e na root(tradutor) para facilitar o script de correção.
 Caso não queira utilizar 'make', os comandos utilizados para compilação, ligação e execução encontram-se em /bin/makefile
-OBS: Caso não consiga compilar, existe um executável disponível na pasta executaveis (Linux).
+
+OBS: Caso não consiga compilar, existe um executável disponível na root.
 
 ### Arquivos teste
 Existem alguns arquivos de teste .obj criados em /examples.
