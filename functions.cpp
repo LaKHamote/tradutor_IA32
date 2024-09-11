@@ -221,6 +221,7 @@ void writeoutputFunction(ostream& output){
     output << "    \tjge n_positivo        ; Se EBX for maior ou igual a 0 (não negativo), salta para o rótulo n_positivo\n\n";
     output << "    \tmov eax, '-'          ; Se o número for negativo, coloca o caractere '-' em EAX\n";
     output << "    \tcall escreve_char     ; Chama a função escreve_char para imprimir o caractere '-'\n";
+    output << "    \tadd ecx, 1            ; Incrementa o contador de dígitos (ECX) em 1, pois foi escrito o negativo\n";
     output << "    \tneg ebx               ; Torna EBX positivo (se estava negativo)\n";
     output << "n_positivo:\n";
     output << "    \tmov eax, ebx          ; Move o valor absoluto de EBX para EAX (preparando para conversão de dígitos)\n\n";
