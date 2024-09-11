@@ -7,10 +7,7 @@ clean:
 	rm -f ./bin/*.out
 
 clean_examples:
-	rm -f ./examples/*.o
-	rm -f ./examples/*.exe
 	rm -f ./examples/*.tmp
-	rm -f ./examples/*.out
 	rm -f ./examples/*.s
 
 ia_32:
@@ -19,11 +16,11 @@ ia_32:
 run:
 	+$(MAKE) -C bin  run
 
-input:	input_S.asm
-	nasm -f elf input_S.asm -o input_S.o
-	ld -m elf_i386 -o input_S.exe input_S.o
+test:	$(path)
+	nasm -f elf $(path) -o $(path:.tmp=.o)
+	ld -m elf_i386 -o $(path:.tmp=.exe) $(path:.tmp=.o)
 	@echo "--------Running .exe file...--------"
-	./input_S.exe
+	./$(path:.tmp=.exe)
 	@echo "\n--------.exe file has finished executing.--------"
-	rm -f ./input_S.o
-	rm -f ./input_S.exe
+	rm -f ./$(path:.tmp=.o)
+	rm -f ./$(path:.tmp=.exe)
