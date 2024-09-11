@@ -17,10 +17,11 @@ run:
 	+$(MAKE) -C bin  run
 
 test:	$(path)
-	nasm -f elf $(path) -o $(path:.tmp=.o)
-	ld -m elf_i386 -o $(path:.tmp=.exe) $(path:.tmp=.o)
+	nasm -f elf $(path) -o $(path:.s=.o)
+	ld -m elf_i386 $(path:.s=.o) -o $(path:.s=.exe)
 	@echo "--------Running .exe file...--------"
-	./$(path:.tmp=.exe)
+	./$(path:.s=.exe)
 	@echo "\n--------.exe file has finished executing.--------"
-	rm -f ./$(path:.tmp=.o)
-	rm -f ./$(path:.tmp=.exe)
+	rm -f ./$(path:.s=.o)
+	rm -f ./$(path:.s=.tmp)
+	rm -f ./$(path:.s=.exe)
